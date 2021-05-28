@@ -59,7 +59,12 @@ def update():
 
     shapiro_test = stats.shapiro(result)
 
-    normal_test_container.data = dict(dias=[rolling_window], estadistico=[shapiro_test.statistic], p_valor=[shapiro_test.pvalue])
+    normal_test_container.data = dict(dias=[rolling_window],
+                                      estadistico=[shapiro_test.statistic],
+                                      p_valor=[shapiro_test.pvalue],
+                                      kurtosis=[stats.kurtosis(result)],
+                                      skew=[stats.skew(result)]
+                                      )
 
     ups_x = data_temp[[x >= 1.0 for x in result]]["Date"].values
     ups_y = [x for x in result if x >= 1.0]
@@ -166,7 +171,11 @@ bitcoin_downs_container = ColumnDataSource(data=dict(x=[], y=[]))
 
 bitcoin_periods_container, outliers_container, histogram_container = get_box_plot_data_source()
 
-normal_test_container = ColumnDataSource(data=dict(dias=[], estadistico=[], p_valor=[]))
+normal_test_container = ColumnDataSource(data=dict(dias=[],
+                                                   estadistico=[],
+                                                   p_valor=[],
+                                                   kurtosis=[],
+                                                   skew=[]))
 
 #########################Comparacion#########################
 
@@ -271,6 +280,8 @@ columns = [
         TableColumn(field="dias", title="Días"),
         TableColumn(field="estadistico", title="Estadistico"),
         TableColumn(field="p_valor", title="P-Valor"),
+        TableColumn(field="kurtosis", title="kurtosis"),
+        TableColumn(field="skew", title="Asimetria")
     ]
 
 data_table = DataTable(source=normal_test_container, columns=columns)
