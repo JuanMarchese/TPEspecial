@@ -10,6 +10,7 @@ plot_height = 600
 import pandas as pd
 import numpy as np
 import datetime
+from scipy import stats
 import sys
 
 #### Imports for Bokeh
@@ -23,7 +24,7 @@ from bokeh.models import Legend
 
 from bokeh.layouts import column, row, layout
 from bokeh.io import curdoc
-from bokeh.models import ColumnDataSource, Div, Select, CheckboxButtonGroup, DateRangeSlider, DateRangeSlider, Triangle, Slider, Segment, Quad
+from bokeh.models import ColumnDataSource, Div, Select, CheckboxButtonGroup, DateRangeSlider, Slider, Segment, Quad, DataTable, DateFormatter, TableColumn
 
 
 from AuxiliaryFunctions import *
@@ -55,6 +56,10 @@ def update():
                                         y=values)
 
     result = calculate_variations_and_window(values, data_temp["Date"], bitcoin_periods_container, outliers_container, histogram_container)
+
+    shapiro_test = stats.shapiro(result)
+
+    normal_test_container.data = dict(dias=[rolling_window], estadistico=[shapiro_test.statistic], p_valor=[shapiro_test.pvalue])
 
     ups_x = data_temp[[x >= 1.0 for x in result]]["Date"].values
     ups_y = [x for x in result if x >= 1.0]
@@ -161,6 +166,8 @@ bitcoin_downs_container = ColumnDataSource(data=dict(x=[], y=[]))
 
 bitcoin_periods_container, outliers_container, histogram_container = get_box_plot_data_source()
 
+normal_test_container = ColumnDataSource(data=dict(dias=[], estadistico=[], p_valor=[]))
+
 #########################Comparacion#########################
 
 main_plot = figure(x_axis_type="datetime",
@@ -257,11 +264,22 @@ four_thplot.xaxis.axis_label = 'Variacion'
 four_thplot.yaxis.axis_label = 'Cantidad'
 four_thplot.grid.grid_line_color = "white"
 
+
+#### Tabla
+
+columns = [
+        TableColumn(field="dias", title="Días"),
+        TableColumn(field="estadistico", title="Estadistico"),
+        TableColumn(field="p_valor", title="P-Valor"),
+    ]
+
+data_table = DataTable(source=normal_test_container, columns=columns)
+
 #########################Controles#########################
 
 update()
 
-controls = [slider_date_range, slider_rolling_window, checkbox_button_group, checkbox_button_group_kill]
+controls = [slider_date_range, slider_rolling_window, checkbox_button_group, checkbox_button_group_kill, data_table]
 
 slider_date_range.on_change('value', update_date_range)
 slider_rolling_window.on_change('value', update_rolling_window)
