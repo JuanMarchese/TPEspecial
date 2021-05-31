@@ -191,3 +191,41 @@ def calculate_variations_and_window(original_values, original_dates, data_source
     return result
 
 
+#####################################################################################################################
+#####################################################################################################################
+#####################################################################################################################
+
+# Generic line plot
+from bokeh.plotting import figure
+from bokeh.models import ColumnDataSource, Span
+from bokeh.colors import RGB
+
+
+def get_plot_and_data(plot_width, plot_height, title, halvings=[]):
+    data_source = ColumnDataSource(data=dict(x=[], y=[]))
+
+    main_plot = figure(x_axis_type="datetime",
+                       title=title,
+                       plot_width=plot_width, plot_height=plot_height)
+
+    main_plot.grid.grid_line_alpha = 0.3
+    main_plot.xaxis.axis_label = 'Fecha'
+    main_plot.yaxis.axis_label = ""
+
+    main_plot.line(source=data_source,
+                   x="x",
+                   y="y",
+                   color=RGB(0, 0, 255))
+
+    for date in halvings:
+        line = Span(location=datetime.datetime.strptime(date, "%Y-%m-%d"),
+                    dimension='height', line_color='red',
+                    line_dash='dashed', line_width=1)
+        main_plot.add_layout(line)
+
+    return main_plot, data_source
+
+
+
+
+

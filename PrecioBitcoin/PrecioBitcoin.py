@@ -1,7 +1,7 @@
 #### Constants
 
-bitcoin_price_path = "./value-usd.csv"
-path_cpi = "./US-CPI.csv"
+bitcoin_price_path = "variables/value-usd.csv"
+path_cpi = "variables/US-CPI.csv"
 
 plot_width = 1200
 plot_height = 600
