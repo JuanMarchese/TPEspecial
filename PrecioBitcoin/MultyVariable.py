@@ -10,25 +10,27 @@ from bokeh.io import curdoc
 variable_path = "./variables/"
 
 var_data = {
-            "CostoTransaccion":  {"Y": "USD",
-                                  "file": "cost-transaction.csv"},
-            "Dificultad":        {"Y": "deficultad",
-                                  "file": "difficulty.csv"},
-            "DireccionesUnicas": {"Y": "N",
-                                  "file": "direcciones-unicas.csv"},
-            "HashRate":          {"Y": "HashRate",
-                                  "file": "hashrate.csv"},
-            "GananciaMineros":   {"Y": "USD",
-                                  "file": "miners-revenue.csv"},
-            "Transacciones":     {"Y": "N",
-                                  "file": "number-transactions.csv"},
-            "TotalBitcoins":     {"Y": "N",
-                                  "file": "total-bitcoin.csv"},
-            "VolumenTransacciones": {"Y": "USD",
-                                 "file": "transaction-volume.csv"},
-            "Valor": {"Y": "USD",
-                                 "file": "value-usd.csv"}
-}
+            "CostoTransaccion":       {"Y": "USD",
+                                       "file": "cost-transaction.csv"},
+            "Dificultad":             {"Y": "deficultad",
+                                       "file": "difficulty.csv"},
+            "DireccionesUnicas":      {"Y": "N",
+                                       "file": "direcciones-unicas.csv"},
+            "HashRate":               {"Y": "HashRate",
+                                       "file": "hashrate.csv"},
+            "GananciaMineros":        {"Y": "USD",
+                                       "file": "miners-revenue.csv"},
+            "Transacciones":          {"Y": "N",
+                                       "file": "number-transactions.csv"},
+            "TotalBitcoins":          {"Y": "N",
+                                       "file": "total-bitcoin.csv"},
+            "VolumenTransacciones":   {"Y": "USD",
+                                       "file": "transaction-volume.csv"},
+            "Valor":                  {"Y": "USD",
+                                       "file": "value-usd.csv"},
+            "TotalIntercambiado":     {"Y": "USD",
+                                       "file": "total-exchange.csv"}
+          }
 
 
 ################################################################################
