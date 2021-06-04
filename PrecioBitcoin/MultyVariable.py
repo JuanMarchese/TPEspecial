@@ -29,7 +29,9 @@ var_data = {
             "Valor":                  {"Y": "USD",
                                        "file": "value-usd.csv"},
             "TotalIntercambiado":     {"Y": "USD",
-                                       "file": "total-exchange.csv"}
+                                       "file": "total-exchange.csv"},
+            "HashRateCost":           {"Y": "USD",
+                                       "file": "HashRateCost.csv"}
           }
 
 
