@@ -225,7 +225,43 @@ def get_plot_and_data(plot_width, plot_height, title, halvings=[]):
 
     return main_plot, data_source
 
+#####################################################################################################################
+#####################################################################################################################
+#####################################################################################################################
 
+
+def fix_hash_power(hash_power_df):
+
+    new_data = []
+    new_dates = []
+
+    old_data = hash_power_df.Value.values
+    old_dates = hash_power_df.Date.values
+
+    i = 0
+
+    while i < len(old_data):
+
+        current_date = datetime.datetime.strptime(old_dates[i], '%Y-%m-%d')
+        end_date = datetime.datetime.strptime(old_dates[i + 1], '%Y-%m-%d')
+
+        while current_date <= end_date:
+            new_data.append(old_data[i])
+            new_dates.append(current_date.strftime('%Y-%m-%d'))
+
+            current_date = current_date + datetime.timedelta(days=1)
+
+        i += 2
+
+    return pd.DataFrame(dict(Date=new_dates, Value=new_data))
+
+
+def calculate_bitcoin_cost(hash_power_df, hash_rate_df, electricity_cost):
+    hash_power_fix_df = fix_hash_power(hash_power_df)
+    result = pd.merge(hash_power_fix_df, hash_rate_df, on="Date")
+    result["Value"] = result.Value_x * result.Value_y * electricity_cost
+
+    return result[["Date", "Value"]]
 
 
 

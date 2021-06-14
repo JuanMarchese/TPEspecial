@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from AuxiliaryFunctions import get_plot_and_data, string_to_datetime, to_datetime
+from AuxiliaryFunctions import get_plot_and_data, string_to_datetime, to_datetime, calculate_bitcoin_cost
 
 from bokeh.models import Select, DateRangeSlider
 from bokeh.layouts import column, row
@@ -71,6 +71,9 @@ def change_plot(attr, old, new):
 for var_name in var_data.keys():
     var_data[var_name]["data"] = load_data(var_data[var_name]["file"])
 
+
+var_data["BitcoinCost"] = {"Y": "USD"}
+var_data["BitcoinCost"]["data"] = calculate_bitcoin_cost(var_data["HashRateCost"]["data"], var_data["HashRate"]["data"], 0.1)
 
 plot_width = 1200
 plot_height = 600
