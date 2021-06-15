@@ -25,6 +25,7 @@ def outliers(group):
     cat = group.name
     return group[(group.score > upper.loc[cat]['score']) | (group.score < lower.loc[cat]['score'])]['score']
 
+
 ####################################################################
 
 # Box plot auxiliary
