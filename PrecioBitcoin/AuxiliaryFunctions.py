@@ -198,7 +198,7 @@ def calculate_variations_and_window(original_values, original_dates, data_source
 
 # Generic line plot
 from bokeh.plotting import figure
-from bokeh.models import ColumnDataSource, Span
+from bokeh.models import ColumnDataSource, Span, HoverTool
 from bokeh.colors import RGB
 
 
@@ -217,6 +217,13 @@ def get_plot_and_data(plot_width, plot_height, title, halvings=[]):
                    x="x",
                    y="y",
                    color=RGB(0, 0, 255))
+
+    main_plot.add_tools(HoverTool(
+                                tooltips=[('Fecha', '@x{%F}'),
+                                          ('Valor', '@y')],
+                                formatters={'@x': 'datetime'},
+                                mode='vline'
+                        ))
 
     for date in halvings:
         line = Span(location=datetime.datetime.strptime(date, "%Y-%m-%d"),

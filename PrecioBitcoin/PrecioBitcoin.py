@@ -24,7 +24,7 @@ from bokeh.models import Legend
 
 from bokeh.layouts import column, row, layout
 from bokeh.io import curdoc
-from bokeh.models import ColumnDataSource, Div, Select, CheckboxButtonGroup, DateRangeSlider, Slider, Segment, Quad, DataTable, DateFormatter, TableColumn
+from bokeh.models import ColumnDataSource, Div, Select, CheckboxButtonGroup, DateRangeSlider, Slider, Segment, Quad, DataTable, DateFormatter, TableColumn, HoverTool
 
 
 from AuxiliaryFunctions import *
@@ -183,7 +183,6 @@ main_plot = figure(x_axis_type="datetime",
                    title="Precio Bitcoin (USD)",
                    plot_width=plot_width, plot_height=plot_height)
 
-
 main_plot.grid.grid_line_alpha= 0.3
 main_plot.xaxis.axis_label = 'Fecha'
 main_plot.yaxis.axis_label = "$"
@@ -198,6 +197,12 @@ main_plot.line(source=bitcoin_price_container,
                color=HSL(60, 1.0, 0.5).to_rgb(),
                legend_label="Bitcoin price")
 
+main_plot.add_tools(HoverTool(
+                              tooltips=[('Fecha', '@x{%F}'),
+                                        ('Precio', '@y')],
+                              formatters={'@x': 'datetime'},
+                              mode='vline'
+                              ))
 
 second_plot = figure(x_axis_type="datetime",
                      title="Precio Bitcoin (USD)",
