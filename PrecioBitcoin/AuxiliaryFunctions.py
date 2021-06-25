@@ -2,6 +2,15 @@ import pandas as pd
 import numpy as np
 import datetime
 
+# Generic line plot
+from bokeh.plotting import figure
+from bokeh.models import ColumnDataSource, Span, HoverTool
+from bokeh.colors import RGB
+from bokeh.models import NumeralTickFormatter
+
+
+
+
 
 def to_datetime(x):
     return np.array(x, dtype=np.datetime64)
@@ -133,7 +142,7 @@ def update_data_source(all_values, all_group_names, data_source,
                            )
 
 
-def calculate_variations_and_window(original_values, original_dates, data_source, outliers_data_source, histogram_data_source):
+def calculate_variations_and_window_old(original_values, original_dates, data_source, outliers_data_source, histogram_data_source):
     result = [1.0]
 
     period_count = 0
@@ -192,14 +201,70 @@ def calculate_variations_and_window(original_values, original_dates, data_source
     return result
 
 
+def calculate_variations_and_window(original_values, original_dates, data_source, outliers_data_source, histogram_data_source):
+    result = [1.0]
+
+    period_count = 0
+    period_average = 0
+
+    period_result = []
+
+    current_group_values = []
+    all_values = []
+    all_group_names = []
+
+    ligth_colors = []
+    dark_colors = []
+
+    for i in range(1, len(original_values)):
+        previous = original_values[i - 1]
+        current = original_values[i]
+
+        if previous > 0.0:
+            result.append(current / previous)
+        else:
+            result.append(1.0)
+
+        if period_count < 30:
+            period_count += 1
+            period_average += result[-1]
+            current_group_values.append(result[-1])
+        else:
+            if period_count > 7:
+                if result[-1] >= 1:
+                    current_color = RGB(256, 0, 0)
+                    ligth_colors.append(ligth_red)
+                    dark_colors.append(dark_red)
+                else:
+                    current_color = RGB(0, 256, 0)
+                    ligth_colors.append(ligth_green)
+                    dark_colors.append(dark_green)
+
+                start_date = original_dates[i - period_count]
+                end_date = original_dates[i]
+                middle_date = original_dates[i - int(period_count/2)]
+                key_date = start_date + "/" + end_date + "/" + middle_date
+
+                period_result.append([period_average/period_count, period_count, current_color])
+
+                all_values = all_values + current_group_values
+                all_group_names = all_group_names + ([key_date] * len(current_group_values))
+
+            period_count = 1
+            period_average = result[-1]
+            current_group_values = [result[-1]]
+
+    update_histogram_data_source(all_values, histogram_data_source)
+    update_data_source(all_values, all_group_names, data_source, ligth_colors, dark_colors, outliers_data_source)
+
+    return result
+
+
 #####################################################################################################################
 #####################################################################################################################
 #####################################################################################################################
 
-# Generic line plot
-from bokeh.plotting import figure
-from bokeh.models import ColumnDataSource, Span, HoverTool
-from bokeh.colors import RGB
+
 
 
 def get_plot_and_data(plot_width, plot_height, title, halvings=[]):
@@ -272,4 +337,35 @@ def calculate_bitcoin_cost(hash_power_df, hash_rate_df, electricity_cost):
     return result[["Date", "Value"]]
 
 
+##########################################################################
+
+
+def get_generic_plort(title, x_axis, y_axis, y_axis_money=False, x_axis_is_date=True):
+
+    if x_axis_is_date:
+        p1 = figure(x_axis_type="datetime",
+                    title=title,
+                    plot_width=1000,
+                    plot_height=700)
+    else:
+        p1 = figure(title=title,
+                    plot_width=1000,
+                    plot_height=700)
+
+    p1.title.text_font_size = '15pt'
+
+    p1.grid.grid_line_alpha = 0.4
+
+    p1.xaxis.axis_label = x_axis
+    p1.xaxis.axis_label_text_font_size = "15pt"
+    p1.xaxis.major_label_text_font_size = "10pt"
+
+    p1.yaxis.axis_label = y_axis
+    p1.yaxis.axis_label_text_font_size = "15pt"
+    p1.yaxis.major_label_text_font_size = "10pt"
+
+    if y_axis_money:
+        p1.yaxis.formatter = NumeralTickFormatter(format="$0,0")
+
+    return p1
 

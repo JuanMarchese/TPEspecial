@@ -45,12 +45,13 @@ def update():
     data_temp = data_temp[data_temp["Date"] >= start_date]
     data_temp = data_temp[data_temp["Date"] <= end_date]
     data_temp = data_temp.reset_index()
+    data_temp["ValueOriginal"] = data_temp["Value"]
     data_temp["Value"] = data_temp["Value"].values / data_temp["Value"].values[0]
 
     if rolling_window > 0:
-        values = data_temp["Value"].rolling(rolling_window).sum()
+        values = data_temp["ValueOriginal"].rolling(rolling_window).mean()
     else:
-        values = data_temp["Value"]
+        values = data_temp["ValueOriginal"]
 
     bitcoin_price_container.data = dict(x=to_datetime(data_temp["Date"].values),
                                         y=values)
@@ -131,6 +132,7 @@ bitcoin_price = bitcoin_price.sort_values(by='Date').reset_index()
 
 bitcoin_price = pd.merge(bitcoin_price, new_cpi, on="Date")
 bitcoin_price["CPI"] = bitcoin_price["CPI"].values / bitcoin_price["CPI"].values[0]
+
 bitcoin_price["Value_deflated"] = bitcoin_price["Value"] / bitcoin_price["CPI"]
 
 
@@ -179,23 +181,12 @@ normal_test_container = ColumnDataSource(data=dict(dias=[],
 
 #########################Comparacion#########################
 
-main_plot = figure(x_axis_type="datetime",
-                   title="Precio Bitcoin (USD)",
-                   plot_width=plot_width, plot_height=plot_height)
-
-main_plot.grid.grid_line_alpha= 0.3
-main_plot.xaxis.axis_label = 'Fecha'
-main_plot.yaxis.axis_label = "$"
-
-main_plot_legend = Legend()
-main_plot.add_layout(main_plot_legend, 'right')
-main_plot.legend.click_policy = "hide"
+main_plot = get_generic_plort("Precio Bitcoin (USD)", "Fecha", "USD", y_axis_money=True)
 
 main_plot.line(source=bitcoin_price_container,
                x="x",
                y="y",
-               color=HSL(60, 1.0, 0.5).to_rgb(),
-               legend_label="Bitcoin price")
+               color=RGB(0, 0, 256))
 
 main_plot.add_tools(HoverTool(
                               tooltips=[('Fecha', '@x{%F}'),
@@ -204,18 +195,15 @@ main_plot.add_tools(HoverTool(
                               mode='vline'
                               ))
 
-second_plot = figure(x_axis_type="datetime",
-                     title="Precio Bitcoin (USD)",
-                     plot_width=plot_width, plot_height=plot_height)
+################
 
 
-second_plot.grid.grid_line_alpha= 0.3
-second_plot.xaxis.axis_label = 'Fecha'
-second_plot.yaxis.axis_label = "Variacion"
+second_plot = get_generic_plort("Variacion precio Bitcoin", "Fecha", "Variacion", y_axis_money=False)
 
-second_plot_legend = Legend()
-second_plot.add_layout(second_plot_legend, 'right')
-second_plot.legend.click_policy = "hide"
+
+#second_plot_legend = Legend()
+#second_plot.add_layout(second_plot_legend, 'right')
+#second_plot.legend.click_policy = "hide"
 
 second_plot.circle(source=bitcoin_ups_container,
                    x="x",
@@ -233,14 +221,8 @@ second_plot.circle(source=bitcoin_downs_container,
 
 # Boxplot
 
-third_plot = figure(x_axis_type="datetime",
-                    title="Períodos de suba o baja",
-                    plot_width=plot_width, plot_height=plot_height)
 
-third_plot.grid.grid_line_alpha= 0.3
-third_plot.xaxis.axis_label = 'Fecha'
-third_plot.yaxis.axis_label = "Variacion"
-
+third_plot = get_generic_plort("Períodos de suba o baja", "Fecha", "Variacion", y_axis_money=False)
 
 # stems
 glyph = Segment(x0="x_position_middle", y0="upper_line_bottom", x1="x_position_middle", y1="upper_line_top", line_color="black")
@@ -248,7 +230,6 @@ third_plot.add_glyph(bitcoin_periods_container, glyph)
 
 glyph = Segment(x0="x_position_middle", y0="down_line_bottom", x1="x_position_middle", y1="down_line_top", line_color="black")
 third_plot.add_glyph(bitcoin_periods_container, glyph)
-
 
 # boxes
 glyph = Quad(left="x_position_start", right="x_position_end", top="upper_box_top", bottom="upper_box_bottom", fill_color="ligth_color")
@@ -265,17 +246,13 @@ third_plot.circle(source=outliers_container,
 
 # Histogram
 
-four_thplot = figure(title="Histograma",
-                     plot_width=plot_width, plot_height=plot_height)
+four_thplot = get_generic_plort("Histograma", "Variacion", "Cantidad", y_axis_money=False, x_axis_is_date=False)
+
 
 four_thplot.quad(source=histogram_container,
                  top="hist", bottom=0, left="left", right="right",
                  fill_color="color", line_color="white", alpha=0.5)
-
 four_thplot.y_range.start = 0
-
-four_thplot.xaxis.axis_label = 'Variacion'
-four_thplot.yaxis.axis_label = 'Cantidad'
 four_thplot.grid.grid_line_color = "white"
 
 
