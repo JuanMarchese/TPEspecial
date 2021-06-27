@@ -56,7 +56,12 @@ def update():
     bitcoin_price_container.data = dict(x=to_datetime(data_temp["Date"].values),
                                         y=values)
 
-    result = calculate_variations_and_window(values, data_temp["Date"], bitcoin_periods_container, outliers_container, histogram_container)
+    result = calculate_variations_and_window(values,
+                                             data_temp["Date"],
+                                             bitcoin_periods_container,
+                                             outliers_container,
+                                             histogram_container,
+                                             box_size)
 
     shapiro_test = stats.shapiro(result)
 
@@ -91,6 +96,12 @@ def update_date_range(attr, old, new):
 def update_rolling_window(attr, old, new):
     global rolling_window
     rolling_window = new
+    update()
+
+
+def update_box_size(attr, old, new):
+    global box_size
+    box_size = new
     update()
 
 
@@ -150,6 +161,7 @@ start_date = bitcoin_price.Date.values[0]
 end_date = bitcoin_price.Date.values[-1]
 
 rolling_window = 0
+box_size = 30
 
 slider_date_range = DateRangeSlider(title="Rango años",
                                  start=string_to_datetime(start_date), end=string_to_datetime(end_date),
@@ -158,6 +170,9 @@ slider_date_range = DateRangeSlider(title="Rango años",
 
 slider_rolling_window = Slider(title="Rolling window",
                                start=0, end=60, value=0, step=1)
+
+slider_box_size = Slider(title="Tamaño cajas",
+                               start=30, end=360, value=30, step=30)
 
 LABELS = ["Deflated"]
 checkbox_button_group = CheckboxButtonGroup(labels=LABELS)
@@ -272,10 +287,11 @@ data_table = DataTable(source=normal_test_container, columns=columns)
 
 update()
 
-controls = [slider_date_range, slider_rolling_window, checkbox_button_group, checkbox_button_group_kill, data_table]
+controls = [slider_date_range, slider_rolling_window, checkbox_button_group, checkbox_button_group_kill, data_table, slider_box_size]
 
 slider_date_range.on_change('value', update_date_range)
 slider_rolling_window.on_change('value', update_rolling_window)
+slider_box_size.on_change('value', update_box_size)
 checkbox_button_group.on_change('active', update_deflation)
 checkbox_button_group_kill.on_change('active', kill_app)
 
