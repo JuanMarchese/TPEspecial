@@ -282,17 +282,17 @@ def calculate_bitcoin_cost(hash_power_df, hash_rate_df, electricity_cost):
 ##########################################################################
 
 
-def get_generic_plort(title, x_axis, y_axis, y_axis_money=False, x_axis_is_date=True):
+def get_generic_plot(title, x_axis, y_axis, y_axis_money=False, x_axis_is_date=True, plot_width=1200,  plot_height=800):
 
     if x_axis_is_date:
         p1 = figure(x_axis_type="datetime",
                     title=title,
-                    plot_width=1000,
-                    plot_height=700)
+                    plot_width=plot_width,
+                    plot_height=plot_height)
     else:
         p1 = figure(title=title,
-                    plot_width=1000,
-                    plot_height=700)
+                    plot_width=plot_width,
+                    plot_height=plot_height)
 
     p1.title.text_font_size = '15pt'
 

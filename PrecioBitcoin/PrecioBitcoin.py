@@ -196,7 +196,7 @@ normal_test_container = ColumnDataSource(data=dict(dias=[],
 
 #########################Comparacion#########################
 
-main_plot = get_generic_plort("Precio Bitcoin (USD)", "Fecha", "USD", y_axis_money=True)
+main_plot = get_generic_plot("Precio Bitcoin (USD)", "Fecha", "USD", y_axis_money=True)
 
 main_plot.line(source=bitcoin_price_container,
                x="x",
@@ -213,7 +213,7 @@ main_plot.add_tools(HoverTool(
 ################
 
 
-second_plot = get_generic_plort("Variacion precio Bitcoin", "Fecha", "Variacion", y_axis_money=False)
+second_plot = get_generic_plot("Variacion precio Bitcoin", "Fecha", "Variacion", y_axis_money=False)
 
 
 #second_plot_legend = Legend()
@@ -237,7 +237,7 @@ second_plot.circle(source=bitcoin_downs_container,
 # Boxplot
 
 
-third_plot = get_generic_plort("Períodos de suba o baja", "Fecha", "Variacion", y_axis_money=False)
+third_plot = get_generic_plot("Períodos de suba o baja", "Fecha", "Variacion", y_axis_money=False)
 
 # stems
 glyph = Segment(x0="x_position_middle", y0="upper_line_bottom", x1="x_position_middle", y1="upper_line_top", line_color="black")
@@ -261,7 +261,7 @@ third_plot.circle(source=outliers_container,
 
 # Histogram
 
-four_thplot = get_generic_plort("Histograma", "Variacion", "Cantidad", y_axis_money=False, x_axis_is_date=False)
+four_thplot = get_generic_plot("Histograma", "Variacion", "Cantidad", y_axis_money=False, x_axis_is_date=False)
 
 
 four_thplot.quad(source=histogram_container,
