@@ -75,6 +75,18 @@ for var_name in var_data.keys():
 var_data["BitcoinCost"] = {"Y": "USD"}
 var_data["BitcoinCost"]["data"] = calculate_bitcoin_cost(var_data["HashRateCost"]["data"], var_data["HashRate"]["data"], 0.1)
 
+market_cap = pd.merge(var_data["Valor"]["data"],
+                      var_data["TotalBitcoins"]["data"],
+                      how="inner",
+                      on=["Date"])
+
+market_cap["Value"] = market_cap["Value_x"] * market_cap["Value_y"]
+
+
+var_data["BitcoinMarketCap"] = {"Y": "USD",
+                                "data": market_cap}
+
+
 plot_width = 1200
 plot_height = 600
 

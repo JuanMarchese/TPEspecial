@@ -75,9 +75,9 @@ def get_box_plot_data_source():
 
 
 def update_histogram_data_source(values, data_source):
-    hist, edges = np.histogram(values, density=True, bins=50)
+    hist, edges = np.histogram(values, bins=50)
 
-    colors = [ligth_green if x >= 1.0 else ligth_red for x in edges[1:]]
+    colors = [ligth_green if x >= 0.0 else ligth_red for x in edges[1:]]
 
     data_source.data = dict(hist=hist,
                             left=edges[:-1],
@@ -143,7 +143,7 @@ def update_data_source(all_values, all_group_names, data_source,
 
 
 def calculate_variations_and_window(original_values, original_dates, data_source, outliers_data_source, histogram_data_source, box_size):
-    result = [1.0]
+    result = [0.0]
 
     period_count = 0
     period_average = 0
@@ -162,9 +162,9 @@ def calculate_variations_and_window(original_values, original_dates, data_source
         current = original_values[i]
 
         if previous > 0.0:
-            result.append(current / previous)
+            result.append((current / previous) - 1.0)
         else:
-            result.append(1.0)
+            result.append(0.0)
 
         if period_count < box_size:
             period_count += 1
@@ -173,7 +173,7 @@ def calculate_variations_and_window(original_values, original_dates, data_source
         else:
             period_average = period_average / period_count
 
-            if period_average < 1:
+            if period_average < 0.0:
                 current_color = RGB(256, 0, 0)
                 ligth_colors.append(ligth_red)
                 dark_colors.append(dark_red)

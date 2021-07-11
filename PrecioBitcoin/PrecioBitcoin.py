@@ -24,7 +24,7 @@ from bokeh.models import Legend
 
 from bokeh.layouts import column, row, layout
 from bokeh.io import curdoc
-from bokeh.models import ColumnDataSource, Div, Select, CheckboxButtonGroup, DateRangeSlider, Slider, Segment, Quad, DataTable, DateFormatter, TableColumn, HoverTool
+from bokeh.models import ColumnDataSource, Div, Select, CheckboxButtonGroup, DateRangeSlider, Slider, Segment, Quad, DataTable, DateFormatter, TableColumn, HoverTool, Range1d
 
 
 from AuxiliaryFunctions import *
@@ -72,11 +72,11 @@ def update():
                                       skew=[stats.skew(result)]
                                       )
 
-    ups_x = data_temp[[x >= 1.0 for x in result]]["Date"].values
-    ups_y = [x for x in result if x >= 1.0]
+    ups_x = data_temp[[x >= 0.0 for x in result]]["Date"].values
+    ups_y = [x for x in result if x >= 0.0]
 
-    downs_x = data_temp[[x < 1.0 for x in result]]["Date"].values
-    downs_y = [x for x in result if x < 1.0]
+    downs_x = data_temp[[x < 0.0 for x in result]]["Date"].values
+    downs_y = [x for x in result if x < 0.0]
 
     bitcoin_ups_container.data = dict(x=to_datetime(ups_x),
                                       y=ups_y)
@@ -196,7 +196,8 @@ normal_test_container = ColumnDataSource(data=dict(dias=[],
 
 #########################Comparacion#########################
 
-main_plot = get_generic_plot("Precio Bitcoin (USD)", "Fecha", "USD", y_axis_money=True)
+#main_plot = get_generic_plot("Precio Bitcoin (USD)", "Fecha", "USD", y_axis_money=True)
+main_plot = get_generic_plot("Precio Bitcoin (USD Agosto 2010)", "Fecha", "USD Agosto 2010", y_axis_money=True)
 
 main_plot.line(source=bitcoin_price_container,
                x="x",
@@ -205,11 +206,12 @@ main_plot.line(source=bitcoin_price_container,
 
 main_plot.add_tools(HoverTool(
                               tooltips=[('Fecha', '@x{%F}'),
-                                        ('Precio', '@y')],
+                                        ('Precio', '@y{$0,0}')],
                               formatters={'@x': 'datetime'},
                               mode='vline'
                               ))
 
+main_plot.y_range = Range1d(-2000, 65000)
 ################
 
 
