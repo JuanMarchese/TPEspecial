@@ -7,7 +7,7 @@ from bokeh.plotting import figure
 from bokeh.models import ColumnDataSource, Span, HoverTool
 from bokeh.colors import RGB
 from bokeh.models import NumeralTickFormatter
-
+import math
 
 
 
@@ -310,4 +310,18 @@ def get_generic_plot(title, x_axis, y_axis, y_axis_money=False, x_axis_is_date=T
         p1.yaxis.formatter = NumeralTickFormatter(format="$0,0")
 
     return p1
+
+
+def get_fft_transform(data):
+
+    clean_data = [x for x in data if not math.isnan(x)]
+
+    result = abs(np.fft.fft(clean_data, 512))
+
+    vector_size = int((len(result) / 2))
+    x_value = [x for x in range(vector_size)]
+
+    result = list(result)[0:vector_size]
+
+    return x_value, result
 

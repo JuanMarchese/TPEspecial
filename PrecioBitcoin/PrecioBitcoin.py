@@ -49,9 +49,9 @@ def update():
     data_temp["Value"] = data_temp["Value"].values / data_temp["Value"].values[0]
 
     if rolling_window > 0:
-        values = data_temp["ValueOriginal"].rolling(rolling_window).mean()
+        values = data_temp["ValueOriginal"].rolling(rolling_window).mean().values
     else:
-        values = data_temp["ValueOriginal"]
+        values = data_temp["ValueOriginal"].values
 
     bitcoin_price_container.data = dict(x=to_datetime(data_temp["Date"].values),
                                         y=values)
@@ -82,6 +82,16 @@ def update():
                                       y=ups_y)
     bitcoin_downs_container.data = dict(x=to_datetime(downs_x),
                                         y=downs_y)
+
+    x_frecuencia_precio, y_frecuencia_precio = get_fft_transform(values)
+
+    frecuencia_bitcoin_container.data = dict(x=x_frecuencia_precio,
+                                             y=y_frecuencia_precio)
+
+    x_frecuencia_variacion, y_frecuencia_variacion = get_fft_transform(result)
+    frecuencia_variacion_container.data = dict(x=x_frecuencia_variacion,
+                                               y=y_frecuencia_variacion)
+
 
 
 def update_date_range(attr, old, new):
@@ -273,6 +283,29 @@ four_thplot.y_range.start = 0
 four_thplot.grid.grid_line_color = "white"
 
 
+
+###### Frecuencia
+
+
+
+frecuencia_bitcoin_container = ColumnDataSource(data=dict(x=[], y=[]))
+
+frecuencia_variacion_container = ColumnDataSource(data=dict(x=[], y=[]))
+
+
+frecuencia_bitcoin_plot = get_generic_plot("Respuesta en frecuencia precio bitcoin", "X", "Y", y_axis_money=False, x_axis_is_date=False)
+frecuencia_bitcoin_plot.line(source=frecuencia_bitcoin_container,
+                             x="x",
+                             y="y",
+                             color=RGB(0, 0, 256))
+
+frecuencia_variacion_plot = get_generic_plot("Respuesta en frecuencia variacion de precio", "X", "Y", y_axis_money=False, x_axis_is_date=False)
+frecuencia_variacion_plot.line(source=frecuencia_variacion_container,
+                               x="x",
+                               y="y",
+                               color=RGB(0, 0, 256))
+
+
 #### Tabla
 
 columns = [
@@ -300,7 +333,7 @@ checkbox_button_group_kill.on_change('active', kill_app)
 inputs = column(*controls, width=280, height=750)
 inputs.sizing_mode = "fixed"
 
-plot_list = [main_plot, second_plot, third_plot, four_thplot]
+plot_list = [main_plot, second_plot, third_plot, four_thplot, frecuencia_bitcoin_plot, frecuencia_variacion_plot]
 plots = column(*plot_list)
 
 ###########################General###########################
