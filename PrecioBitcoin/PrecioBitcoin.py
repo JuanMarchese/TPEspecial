@@ -293,17 +293,30 @@ frecuencia_bitcoin_container = ColumnDataSource(data=dict(x=[], y=[]))
 frecuencia_variacion_container = ColumnDataSource(data=dict(x=[], y=[]))
 
 
-frecuencia_bitcoin_plot = get_generic_plot("Respuesta en frecuencia precio bitcoin", "X", "Y", y_axis_money=False, x_axis_is_date=False)
+frecuencia_bitcoin_plot = get_generic_plot("Respuesta en frecuencia de precio bitcoin", "", "", y_axis_money=False, x_axis_is_date=False)
 frecuencia_bitcoin_plot.line(source=frecuencia_bitcoin_container,
                              x="x",
                              y="y",
-                             color=RGB(0, 0, 256))
+                             color=RGB(0, 0, 512))
 
-frecuencia_variacion_plot = get_generic_plot("Respuesta en frecuencia variacion de precio", "X", "Y", y_axis_money=False, x_axis_is_date=False)
+frecuencia_variacion_plot = get_generic_plot("Respuesta en frecuencia de variacion de precio", "", "", y_axis_money=False, x_axis_is_date=False)
 frecuencia_variacion_plot.line(source=frecuencia_variacion_container,
                                x="x",
                                y="y",
-                               color=RGB(0, 0, 256))
+                               color=RGB(0, 0, 512))
+
+
+frecuencia_bitcoin_plot.add_tools(HoverTool(
+                                              tooltips=[('Frecuencia', '@x'),
+                                                        ('Energia', '@y')],
+                                              mode='vline'
+                                              ))
+
+frecuencia_variacion_plot.add_tools(HoverTool(
+                                              tooltips=[('Frecuencia', '@x'),
+                                                        ('Energia', '@y')],
+                                              mode='vline'
+                                              ))
 
 
 #### Tabla

@@ -316,7 +316,7 @@ def get_fft_transform(data):
 
     clean_data = [x for x in data if not math.isnan(x)]
 
-    result = abs(np.fft.fft(clean_data, 512))
+    result = abs(np.fft.fft(clean_data))
 
     vector_size = int((len(result) / 2))
     x_value = [x for x in range(vector_size)]
