@@ -75,7 +75,10 @@ def get_box_plot_data_source():
 
 
 def update_histogram_data_source(values, data_source):
-    hist, edges = np.histogram(values, bins=50)
+    #hist, edges = np.histogram(values, bins=50)
+    hist, edges = np.histogram(values, bins=[x / 50 for x in range(-50, 51)])
+
+
 
     colors = [ligth_green if x >= 0.0 else ligth_red for x in edges[1:]]
 
@@ -157,16 +160,21 @@ def calculate_variations_and_window(original_values, original_dates, data_source
     ligth_colors = []
     dark_colors = []
 
+    period_list = [original_values[0]]
+    print("------------------------------------------------------")
+
     for i in range(1, len(original_values)):
         previous = original_values[i - 1]
         current = original_values[i]
+
+        period_list.append(current)
 
         if previous > 0.0:
             result.append((current / previous) - 1.0)
         else:
             result.append(0.0)
 
-        if period_count < box_size:
+        if period_count < box_size and i < (len(original_values) - 1):
             period_count += 1
             period_average += result[-1]
             current_group_values.append(result[-1])
@@ -186,6 +194,28 @@ def calculate_variations_and_window(original_values, original_dates, data_source
             end_date = original_dates[i]
             middle_date = original_dates[i - int(period_count/2)]
             key_date = start_date + "/" + end_date + "/" + middle_date
+
+            my_formatter = "{0:.2f}"
+
+            min_values = min(period_list)
+            max_value = max(period_list)
+
+            label = ""
+
+            if period_average < 0.0:
+                difference = (min_values / max_value) - 1.0
+                label = "Baja & "
+            else:
+                difference = (max_value / min_values) - 1.0
+                label = "Suba & "
+
+            print(start_date + " & " +
+                  end_date + " & " + label +
+                  my_formatter.format(min_values) + " & " +
+                  my_formatter.format(max_value) + " & " +
+                  my_formatter.format(difference) + "\\% \\\\ ")
+
+            period_list = [current]
 
             period_result.append([period_average, period_count, current_color])
 
@@ -286,25 +316,25 @@ def get_generic_plot(title, x_axis, y_axis, y_axis_money=False, x_axis_is_date=T
 
     if x_axis_is_date:
         p1 = figure(x_axis_type="datetime",
-                    title=title,
+                    #title=title,
                     plot_width=plot_width,
                     plot_height=plot_height)
     else:
-        p1 = figure(title=title,
+        p1 = figure(#title=title,
                     plot_width=plot_width,
                     plot_height=plot_height)
 
-    p1.title.text_font_size = '15pt'
+    p1.title.text_font_size = '25pt'
 
     p1.grid.grid_line_alpha = 0.4
 
     p1.xaxis.axis_label = x_axis
-    p1.xaxis.axis_label_text_font_size = "15pt"
-    p1.xaxis.major_label_text_font_size = "10pt"
+    p1.xaxis.axis_label_text_font_size = "25pt"
+    p1.xaxis.major_label_text_font_size = "15pt"
 
     p1.yaxis.axis_label = y_axis
-    p1.yaxis.axis_label_text_font_size = "15pt"
-    p1.yaxis.major_label_text_font_size = "10pt"
+    p1.yaxis.axis_label_text_font_size = "25pt"
+    p1.yaxis.major_label_text_font_size = "15pt"
 
     if y_axis_money:
         p1.yaxis.formatter = NumeralTickFormatter(format="$0,0")

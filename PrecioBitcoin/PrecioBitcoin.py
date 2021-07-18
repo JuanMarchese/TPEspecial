@@ -49,7 +49,11 @@ def update():
     data_temp["Value"] = data_temp["Value"].values / data_temp["Value"].values[0]
 
     if rolling_window > 0:
-        values = data_temp["ValueOriginal"].rolling(rolling_window).mean().values
+        data_temp["temp"] = data_temp["ValueOriginal"].rolling(rolling_window).mean()
+        data_temp = data_temp[data_temp["temp"].notnull()]
+        data_temp = data_temp.reset_index()
+
+        values = data_temp["temp"].values
     else:
         values = data_temp["ValueOriginal"].values
 
@@ -83,6 +87,9 @@ def update():
     bitcoin_downs_container.data = dict(x=to_datetime(downs_x),
                                         y=downs_y)
 
+    bitcoin_ups_downs_container.data = dict(x=to_datetime(data_temp["Date"].values),
+                                        y=result)
+
     x_frecuencia_precio, y_frecuencia_precio = get_fft_transform(values)
 
     frecuencia_bitcoin_container.data = dict(x=x_frecuencia_precio,
@@ -91,7 +98,6 @@ def update():
     x_frecuencia_variacion, y_frecuencia_variacion = get_fft_transform(result)
     frecuencia_variacion_container.data = dict(x=x_frecuencia_variacion,
                                                y=y_frecuencia_variacion)
-
 
 
 def update_date_range(attr, old, new):
@@ -195,6 +201,7 @@ checkbox_button_group_kill = CheckboxButtonGroup(labels=LABELS_2)
 bitcoin_price_container = ColumnDataSource(data=dict(x=[], y=[]))
 bitcoin_ups_container = ColumnDataSource(data=dict(x=[], y=[]))
 bitcoin_downs_container = ColumnDataSource(data=dict(x=[], y=[]))
+bitcoin_ups_downs_container = ColumnDataSource(data=dict(x=[], y=[]))
 
 bitcoin_periods_container, outliers_container, histogram_container = get_box_plot_data_source()
 
@@ -226,6 +233,7 @@ main_plot.y_range = Range1d(-2000, 65000)
 
 
 second_plot = get_generic_plot("Variacion precio Bitcoin", "Fecha", "Variacion", y_axis_money=False)
+#second_plot.y_range = Range1d(-0.2, 0.2)
 
 
 #second_plot_legend = Legend()
@@ -236,15 +244,22 @@ second_plot.circle(source=bitcoin_ups_container,
                    x="x",
                    y="y",
                    color=HSL(120, 1.0, 0.5).to_rgb(),
+                   size=2,
                    legend_label="Precio suba")
 
 second_plot.circle(source=bitcoin_downs_container,
                    x="x",
                    y="y",
                    color=HSL(0, 1.0, 0.5).to_rgb(),
+                   size=2,
                    legend_label="Precio baja")
 
-
+second_plot.line(source=bitcoin_ups_downs_container,
+                 x="x",
+                 y="y",
+                 color=RGB(0, 0, 0),
+                 alpha=0.5,
+                 line_width=0.5)
 
 # Boxplot
 
@@ -282,6 +297,8 @@ four_thplot.quad(source=histogram_container,
 four_thplot.y_range.start = 0
 four_thplot.grid.grid_line_color = "white"
 
+four_thplot.y_range = Range1d(0, 2300)
+four_thplot.x_range = Range1d(-1, 1)
 
 
 ###### Frecuencia
